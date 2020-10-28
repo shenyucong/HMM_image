@@ -127,20 +127,60 @@ def generate_sample(n_samples, length, error_length, save_path, mean1, var1, mea
     plt.tight_layout()
     plt.show()
 
+def generate_segmentation_sample(n_samples, length, error_length, save_path, mean1, var1, mean2, var2):
+
+    X, y = generate_data(n_samples, mean1, var1, mean2, var2, length, error_length)
+
+    print('------------------------------------')
+    print(y[10, :].shape)
+    print('------------------------------------')
+    print(y.shape)
+    print('------------------------------------')
+
+    label = []
+    for i in range(n_samples):
+        if np.sum(y[i,:]) !=0:
+            label.append(1)
+
+        else:
+            label.append(0)
+
+    label = np.array(label)
+
+    count1 = 0
+    count2 = 0
+    for i in range(label.shape[0]):
+        if label[i] == 0:
+            count1 += 1
+        else:
+            count2 +=1
+
+    print('label 0: {}'.format(count1))
+    print('label 1: {}'.format(count2))
+
+    save_path_x = str(save_path) + '_x.npy'
+    save_path_y = str(save_path) + '_y.npy'
+    save_path_seg_y = str(save_path) + '_segmentation_label.npy'
+
+    np.save(save_path_x, X)
+    np.save(save_path_y, label)
+    np.save(save_path_seg_y, y)
+
+
 
 # normal state
 mean1 = 1
 var1 = 1
 
 # error state
-mean2 = 3
+mean2 = 10
 var2 = 1
 
 length = 1024
-error_length = 20
+error_length = 100
 
 train_path = './data/segments_train_L_' + str(length) + '_errorL_' + str(error_length) + '_mu2_' + str(mean2)
 test_path = './data/segments_test_L_' + str(length) + '_errorL_' + str(error_length) + '_mu2_' + str(mean2)
 
-generate_sample(10000, length, error_length, train_path, mean1, var1, mean2, var2)
-generate_sample(2000, length, error_length, test_path, mean1, var1, mean2, var2)
+generate_segmentation_sample(10000, length, error_length, train_path, mean1, var1, mean2, var2)
+generate_segmentation_sample(2000, length, error_length, test_path, mean1, var1, mean2, var2)
